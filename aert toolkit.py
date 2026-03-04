@@ -1,117 +1,111 @@
-import sys
+# aert_toolkit.py
 
-# --- PART A: Stack ADT Implementation ---
 class StackADT:
     def __init__(self):
-        self.stack = []
+        self.items = []
 
     def push(self, x):
-        self.stack.append(x) [cite: 55]
+        self.items.append(x)
 
     def pop(self):
         if not self.is_empty():
-            return self.stack.pop() [cite: 56]
+            return self.items.pop()
         return None
 
     def peek(self):
         if not self.is_empty():
-            return self.stack[-1] [cite: 57]
+            return self.items[-1]
         return None
 
     def is_empty(self):
-        return len(self.stack) == 0 [cite: 58]
+        return len(self.items) == 0
 
     def size(self):
-        return len(self.stack) [cite: 59]
+        return len(self.items)
 
-# Global counters for Fibonacci analysis
+# Global counters and dictionary for Fibonacci
 naive_calls = 0
 memo_calls = 0
 memo = {}
 
-# --- PART B: Factorial & Fibonacci ---
 def factorial(n):
     if n < 0:
-        return "Error: Negative input" [cite: 71, 151]
+        return "Error: Negative input"
     if n == 0 or n == 1:
-        return 1 [cite: 72]
-    return n * factorial(n - 1) [cite: 69, 70]
+        return 1
+    return n * factorial(n - 1)
 
 def fib_naive(n):
     global naive_calls
-    naive_calls += 1 [cite: 81, 82]
+    naive_calls += 1
     if n <= 1:
         return n
-    return fib_naive(n - 1) + fib_naive(n - 2) [cite: 75]
+    return fib_naive(n - 1) + fib_naive(n - 2)
 
 def fib_memo(n):
     global memo_calls
-    memo_calls += 1 [cite: 81, 83]
+    memo_calls += 1
     if n in memo:
-        return memo[n] [cite: 76]
+        return memo[n]
     if n <= 1:
         return n
-    memo[n] = fib_memo(n - 1) + fib_memo(n - 2) [cite: 76]
+    memo[n] = fib_memo(n - 1) + fib_memo(n - 2)
     return memo[n]
 
-# --- PART C: Tower of Hanoi ---
-hanoi_stack = StackADT() # Using StackADT to store move descriptions [cite: 63, 65]
+# Using Stack to store Hanoi moves
+hanoi_moves = StackADT()
 
 def hanoi(n, source, auxiliary, destination):
     if n == 1:
         move = f"Move disk 1 from {source} to {destination}"
-        print(move) [cite: 100]
-        hanoi_stack.push(move)
+        print(move)
+        hanoi_moves.push(move)
         return
-    hanoi(n - 1, source, destination, auxiliary) [cite: 93]
+    hanoi(n - 1, source, destination, auxiliary)
     move = f"Move disk {n} from {source} to {destination}"
     print(move)
-    hanoi_stack.push(move)
-    hanoi(n - 1, auxiliary, source, destination) [cite: 93]
-
-# --- PART D: Recursive Binary Search ---
-search_mids = StackADT() # Using StackADT to track visited midpoints [cite: 66]
+    hanoi_moves.push(move)
+    hanoi(n - 1, auxiliary, source, destination)
 
 def binary_search(arr, key, low, high):
     if low > high:
-        return -1 [cite: 115]
-    
+        return -1
     mid = (low + high) // 2
-    search_mids.push(mid) [cite: 66]
-    
     if arr[mid] == key:
-        return mid [cite: 115]
+        return mid
     elif arr[mid] > key:
-        return binary_search(arr, key, low, mid - 1) [cite: 113, 114]
+        return binary_search(arr, key, low, mid - 1)
     else:
-        return binary_search(arr, key, mid + 1, high) [cite: 113, 114]
+        return binary_search(arr, key, mid + 1, high)
 
-# --- Main Execution / Test Cases ---
 def main():
     print("--- PART B: Factorial & Fibonacci ---")
     for n in [0, 1, 5, 10]:
-        print(f"Factorial({n}): {factorial(n)}") [cite: 89]
+        print(f"Factorial({n}): {factorial(n)}")
     
     print("\nFibonacci Comparison:")
-    for n in [5, 10, 20, 30]: [cite: 90]
+    for n in [5, 10, 20, 30]:
         global naive_calls, memo_calls, memo
         naive_calls = 0
         memo_calls = 0
         memo = {}
-        res_n = fib_naive(n)
         res_m = fib_memo(n)
-        print(f"n={n} | Result: {res_m} | Naive Calls: {naive_calls} | Memo Calls: {memo_calls}") [cite: 90]
+        res_n = fib_naive(n)
+        print(f"n={n} | Result: {res_m} | Naive Calls: {naive_calls} | Memo Calls: {memo_calls}")
 
     print("\n--- PART C: Tower of Hanoi (N=3) ---")
-    hanoi(3, 'A', 'B', 'C') [cite: 94, 99]
+    hanoi(3, 'A', 'B', 'C')
 
     print("\n--- PART D: Binary Search ---")
-    test_arr = [1, 3, 5, 7, 9, 11, 13]
-    for k in [7, 1, 13, 2]: [cite: 123]
-        idx = binary_search(test_arr, k, 0, len(test_arr)-1)
-        print(f"Search {k} in {test_arr}: Index {idx}")
+    arr = [1, 3, 5, 7, 9, 11, 13]
+    for k in [7, 1, 13, 2]:
+        idx = binary_search(arr, k, 0, len(arr) - 1)
+        print(f"Search {k} in {arr}: Index {idx}")
     
-    print(f"Search in empty list []: {binary_search([], 5, 0, -1)}") [cite: 124]
+    # Edge case: empty list
+    empty_arr = []
+    idx_empty = binary_search(empty_arr, 5, 0, -1)
+    print(f"Search in empty list []: Index {idx_empty}")
 
 if __name__ == "__main__":
     main()
